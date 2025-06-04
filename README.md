@@ -28,29 +28,72 @@ In many scientific applications, we encounter situations where a set of discrete
 The objective is to develop an algorithm for polynomial interpolation using the Newton divided difference method. This approach is chosen because of its computational efficiency and ability to update the interpolating polynomial incrementally when new data points are introduced.
 
 The solution is a modular C++ program structured as follows:
-Input Handling}
-The program prompts the user to enter the number of data points \( n \) and the coordinates \((x_i, y_i)\) for each point.
+3.1. Input Handling
+The system processes user input through:
 
-\subsection{Divided Differences Table}
-Compute the divided differences table using the recursive formulation. This table encapsulates all the coefficients needed for constructing the interpolation polynomial.
+Prompt for number of points (n)
 
-\subsection{Polynomial Construction}
-From the differences table, the polynomial will be constructed.
+Coordinate entry for each (xᵢ, yᵢ) pair
 
-\subsection{Output}
-Displays the polynomial in standard format.
+Automatic sorting by x-values
 
-3.1 Input Handling  
-The program prompts the user to enter the number of data points n and the coordinates (xᵢ, yᵢ) for each point.
+Input validation checks
 
-3.2 Divided Differences Table  
-Compute the divided differences table using the recursive formulation. This table encapsulates all the coefficients needed for constructing the interpolation polynomial.
+Key Features:
+• Maintains sorted order for numerical stability
+• Pre-allocates memory for efficiency
+• Handles duplicate x-values by updating y-values
 
-3.3 Polynomial Construction  
-From the differences table, the polynomial will be constructed.
+3.2. Divided Differences Table
+The core computation uses this recursive formula:
 
-3.4 Output  
-Displays the polynomial in standard format.
+f[xᵢ] = yᵢ (initial condition)
+
+f[xᵢ,...,xᵢ₊ₖ] = [f[xᵢ₊₁,...,xᵢ₊ₖ] - f[xᵢ,...,xᵢ₊ₖ₋₁]] / (xᵢ₊ₖ - xᵢ)
+
+Construction Process:
+
+Initialize first column with y-values
+
+Compute each subsequent column using the recursive formula
+
+Store results in triangular matrix
+
+3.3. Polynomial Construction
+The interpolating polynomial is built as:
+
+P(x) = Σ (f[x₀,...,xₖ] × Π (x - xᵢ)) for k=0 to n-1
+
+Step-by-Step Generation:
+
+Start with constant term P(x) = f[x₀]
+
+For each new point:
+
+Multiply current terms by (x - xₖ₋₁)
+
+Add new term weighted by divided difference
+
+Combine terms into final polynomial
+
+3.4. Output System
+Multiple output formats available:
+
+Standard Polynomial Form:
+Displays as: P(x) = aₙxⁿ + ... + a₁x + a₀
+
+Special Formatting Rules:
+• Omits coefficients of 0
+• Simplifies 1xⁿ to xⁿ
+• Handles negative terms properly
+
+Evaluation Options:
+
+Horner's method (recommended):
+P(x) = a₀ + x(a₁ + x(a₂ + ... + x(aₙ₋₁ + xaₙ)...)
+
+Direct evaluation:
+P(x) = Σ aₖxᵏ
 
 4. RESULTS  
 The implementation of Newton's interpolation method was tested with several datasets to verify its accuracy.
@@ -60,8 +103,6 @@ Results for Newton Polynomial Interpolation:
 |-------------------------|---------------------------------|
 | (1, 2), (2, 3), (3, 5) | P(x) = 0.5x² + 0x + 1.5         |
 | (0, 1), (1, 2), (2, 4) | P(x) = 0.5x² + 0.5x + 1         |
-
-Figure 1 shows an example of the interpolated polynomial compared with original data points.
 
 5. DISCUSSION  
 The application of Newton's interpolation method demonstrates a robust and systematic way of constructing a polynomial that precisely passes through the provided data points. The generated polynomials in standard form are consistent with the theoretical expectations.
